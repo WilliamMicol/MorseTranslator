@@ -1,7 +1,7 @@
 
 go = true;
 file;
-
+s
 while go
 x=serial('/dev/cu.usbmodem14101','BAUD', 9600);
 
@@ -11,7 +11,6 @@ stopper = 0;
 for i = 1:length(morseArray)
       while stopper == 0
         pause(length(morseArray)/6.0);
-%         stopper = input('fuck');
         stopper=1; 
       end
     fprintf(x, morseArray(i));
