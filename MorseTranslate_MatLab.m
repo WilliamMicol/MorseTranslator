@@ -1,7 +1,6 @@
 
 go = true;
-file;
-s
+
 while go
 x=serial('/dev/cu.usbmodem14101','BAUD', 9600);
 
@@ -16,9 +15,6 @@ for i = 1:length(morseArray)
     fprintf(x, morseArray(i));
 %     pause(.1);
     
-end
-if a == 2
-    go=false;
 end
 pause(delay);
 delete(x);
