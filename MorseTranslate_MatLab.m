@@ -1,6 +1,6 @@
-
+               
 go = true;
-
+file=dir('bruh.txt');
 while go
 x=serial('/dev/cu.usbmodem14101','BAUD', 9600);
 

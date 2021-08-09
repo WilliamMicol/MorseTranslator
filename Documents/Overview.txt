@@ -1,0 +1,74 @@
+Morse Code Translator Documentation
+
+Research:
+Arduino circuit setup and code ✔️
+Matlab/Arduino serial communication ✔️
+Converting from english text to morse code text ✔️
+Sending Data over Serial ✔️
+Reading textfiles in matlab on loop ✔️
+Updating a text file through script ✔️
+Converting audio on the fly to text files ✖️
+
+The Initial Understanding:
+Words spoken into translator software updating a text file using a voice recognition engine
+The text file is translated into morse code characters using a simple converter 
+Matlab continuously updates the information from this text file creating a char array, converting it to the morse string values, then converting it to number the arduino can process
+The values are serial read into the arduino where they are processed to convert into delay inputs for LED and Piezo Buzzer 
+
+Arduino Circuit Setup and Code
+                                                                    
+Basic circuitry ^
+The arduino’s main job is to simply take the data from matlab, process it, and turn the LED and piezo off and on depending on the data
+pinMode setup to output is required for both the LED and Piezo (Use a pwm pin for the piezo)
+Initialize an array of ints of certain length to store the translated morse code
+Using this int array, loop through and depending on each int, turn the LED and piezo on for a certain amount of time
+MatLab/Arduino Serial Communication 
+In order to begin serial communication between any 2 softwares, make sure communications ports were seen by both arduino and matlab (this gave me issues because I was using the VCL version of MatLab so I had to download the full software)
+On the MatLab end:
+Opening a serial port using the serial() function allows you to send data. Do so by setting the name of the port and arduino serial setting. ie.  serial(‘COM1’, ‘BAUD’, 9600);
+Using the function fprintf(), you can now send 1 byte of data over this serial port connection
+*When using arrays, must send data one by one because serial can only take 1 byte at a time
+On the Arduino end:
+After the MatLab serial process, you can now receive data using Serial.read() and assign it to a variable
+Note that the arduino serial monitor will be unavailable to view during this because the serial communication is being linked with matlab rather than the monitor
+When using arrays, must store the data one by one as received from serial because serial can only take 1 byte at a time
+
+Converting From English to Morse
+Store the text file from the directory as a char array
+Loop through each of the characters and depending on which value char they are, concatenate the morse code equivalent onto a set aside string 
+ie. if(char = ‘A’) → concatenate(string and “•-”)
+Loop through each char of this array and convert each dot, dash, and space to a 1 byte number value to be stored in an integer array. This is what will be passed to the Arduino (I used 1 for dot, 2 for dash, 0 for space)
+This translate process can be completed as a function 
+For this function, store 2 values as the output, one as the integer array achieved from the conversion, and one as a delay time int
+This delay time it will come in handy to keep the serial port open until the arduino has finished executing the morse code
+To create this integer:
+First, get how many dots, dashes, and spaces there are by using same loop you used to create the integer array, adding to a integer representing each char value 
+Then, create one integer by adding together the number of dots,dashes,and spaces multiplied by their respective delay times in arduino (see arduino circuit set up and code)
+Multiply this new value by 3 to have an approximate equivalent wait time for the arduino
+
+Sending the Data Over Serial
+MatLab:
+To send data over serial, use the initialized connection to send bytes of data
+In this case, we sending the array of ints representing the morse code
+Before sending can begin there must be a delay so that the serial connection is established
+Use the pause() function in matlab to achieve this
+Send the data using the generic: fprintf(x, data) 
+Arduino
+Read in each byte of data and store to the created array using Serial.read()
+Use a while loop to continuously read data until the stopping number is reached
+
+Reading Textfiles on Loop
+In order to get this program to work as a translator that is constantly open and looking for new text, matlab must be able to read the text file as soon as it is updated
+To do this, utilize the file.date string and the string compare method strcmp()
+Compare what the current modified date of the text file is to a loop that while constantly looking for an updated version of itself. Once it meets this requirement, leave the loop and begin the translation process again
+This seems to use up a lot of the CPU so concurrent programming may be a better way to deal with this process
+
+Scripting Input
+This is a simple bash script that loops indefinitely until force quit by the user
+It asks the user for an input to translate and saves the input to the file that matlab is using 
+Converting Audio on the fly to textfiles
+Currently have no way to speak and have the text file automatically update when finished speaking 
+Possibilities
+Using dictation to get text to speech then use a bash script to update the text file
+Use a recording device that will automatically save to the same file every time a recording is saved (the baidu engine)
+
